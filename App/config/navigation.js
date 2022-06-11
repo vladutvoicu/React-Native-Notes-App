@@ -34,7 +34,7 @@ export default () => {
         </>
       ) : (
         <>
-          <Stack.Navigator screenOptions={{ animation: "slide_from_right" }}>
+          <Stack.Navigator screenOptions={{ animation: "slide_from_bottom" }}>
             <Stack.Screen
               name="Login"
               component={Login}
