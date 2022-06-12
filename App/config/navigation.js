@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import authentication from "../config/firebase";
+import { authentication } from "../config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 import Home from "../screens/Home";
@@ -14,6 +14,16 @@ const Stack = createNativeStackNavigator();
 
 export default () => {
   const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    onAuthStateChanged(authentication, (data) => {
+      if (data != null) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    });
+  }, []);
 
   return (
     <NavigationContainer>

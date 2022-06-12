@@ -1,10 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, Image, StatusBar, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StatusBar,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import {
   setBackgroundColorAsync,
   setButtonStyleAsync,
 } from "expo-navigation-bar";
+import { authentication } from "../config/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 import AuthInput from "../components/AuthInput";
 import RoundedButton from "../components/RoundedButton";
@@ -14,6 +23,23 @@ import styles from "../constants/styles";
 
 export default ({ navigation }) => {
   const [email, setEmail] = useState("");
+
+  const resetPassword = () => {
+    sendPasswordResetEmail(authentication, email)
+      .then(() => {
+        Alert.alert(
+          "Email Sent",
+          "You will recieve a email with a link to reset your password. It may take a few minutes to recieve the email."
+        ),
+          navigation.navigate("Login");
+      })
+      .catch((error) =>
+        Alert.alert(
+          "Something went wrong",
+          "Email not associated with any account"
+        )
+      );
+  };
   //
   StatusBar.setBarStyle("light-content");
   StatusBar.setBackgroundColor("transparent");
@@ -59,7 +85,7 @@ export default ({ navigation }) => {
             justifyContent: "center",
           }}
         >
-          <RoundedButton text={"Submit"} />
+          <RoundedButton text={"Submit"} onPress={resetPassword} />
         </View>
       </View>
     </View>

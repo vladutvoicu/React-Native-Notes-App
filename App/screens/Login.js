@@ -1,10 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, Image, StatusBar, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StatusBar,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import Checkbox from "expo-checkbox";
 import {
   setBackgroundColorAsync,
   setButtonStyleAsync,
 } from "expo-navigation-bar";
+import { authentication } from "../config/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import AuthInput from "../components/AuthInput";
 import RoundedButton from "../components/RoundedButton";
@@ -16,6 +25,12 @@ export default ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const signIn = () => {
+    signInWithEmailAndPassword(authentication, email, password).catch((error) =>
+      Alert.alert("Something went wrong", `Email or password are invalid`)
+    );
+  };
 
   const setChecked = () => {
     isChecked ? setIsChecked(false) : setIsChecked(true);
@@ -135,7 +150,7 @@ export default ({ navigation }) => {
             justifyContent: "center",
           }}
         >
-          <RoundedButton text={"Login"} />
+          <RoundedButton text={"Login"} onPress={signIn} />
         </View>
       </View>
     </View>

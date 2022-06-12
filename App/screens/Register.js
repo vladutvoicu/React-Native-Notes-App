@@ -1,10 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, Image, StatusBar, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StatusBar,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import {
   setBackgroundColorAsync,
   setButtonStyleAsync,
 } from "expo-navigation-bar";
+import { authentication } from "../config/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import AuthInput from "../components/AuthInput";
 import RoundedButton from "../components/RoundedButton";
@@ -16,6 +25,20 @@ export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reEnteredPassword, setReEnteredPassword] = useState("");
+
+  const signUp = () => {
+    if (password == reEnteredPassword) {
+      createUserWithEmailAndPassword(authentication, email, password)
+        .then(() => {
+          Alert.alert("Succesful Registration", "Account was created!"),
+            navigation.navigate("Login");
+        })
+        .catch((error) => Alert.alert("Something went wrong", `Invalid email`));
+    } else {
+      Alert.alert("Something went wrong", "Passwords must be the same!");
+    }
+  };
+
   //
   StatusBar.setBarStyle("light-content");
   StatusBar.setBackgroundColor("transparent");
@@ -71,7 +94,7 @@ export default ({ navigation }) => {
             justifyContent: "center",
           }}
         >
-          <RoundedButton text={"Register"} />
+          <RoundedButton text={"Register"} onPress={signUp} />
         </View>
       </View>
     </View>
