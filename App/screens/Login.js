@@ -14,6 +14,7 @@ import {
 } from "expo-navigation-bar";
 import { authentication } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import AuthInput from "../components/AuthInput";
 import RoundedButton from "../components/RoundedButton";
@@ -26,10 +27,20 @@ export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const _storeData = async (choice) => {
+    try {
+      await AsyncStorage.setItem("keepLoggedIn", `${choice}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const signIn = () => {
-    signInWithEmailAndPassword(authentication, email, password).catch((error) =>
-      Alert.alert("Something went wrong", `Email or password are invalid`)
-    );
+    signInWithEmailAndPassword(authentication, email, password)
+      .then(_storeData(isChecked))
+      .catch((error) =>
+        Alert.alert("Something went wrong", `Email or password are invalid`)
+      );
   };
 
   const setChecked = () => {
@@ -61,7 +72,7 @@ export default ({ navigation }) => {
         <View style={{ flexDirection: "row", marginTop: 20 }}>
           <Text style={{ fontSize: 18 }}>Don't have an account? </Text>
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.5}
             onPress={() => navigation.navigate("Register")}
           >
             <Text
@@ -102,7 +113,7 @@ export default ({ navigation }) => {
             <TouchableOpacity
               style={{ flexDirection: "row", alignItems: "center" }}
               onPress={setChecked}
-              activeOpacity={0.8}
+              activeOpacity={0.5}
             >
               <Checkbox
                 style={{ borderColor: colors.lightBlue }}
@@ -128,7 +139,7 @@ export default ({ navigation }) => {
               flexDirection: "row",
               alignItems: "center",
             }}
-            activeOpacity={0.8}
+            activeOpacity={0.5}
             onPress={() => navigation.navigate("Reset")}
           >
             <Text
