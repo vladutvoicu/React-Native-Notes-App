@@ -10,7 +10,7 @@ export default AuthInput = ({ text, onPress }) => {
   return (
     <TouchableOpacity
       style={styles.roundedButton}
-      activeOpacity={0.8}
+      activeOpacity={0.5}
       onPress={onPress}
     >
       <Text
