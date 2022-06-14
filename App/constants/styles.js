@@ -4,6 +4,7 @@ import { StyleSheet, StatusBar, Dimensions } from "react-native";
 import colors from "./colors";
 
 const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   loginHeader: {
@@ -77,6 +78,59 @@ const styles = StyleSheet.create({
     left: 20,
     top: StatusBar.currentHeight + 10,
     zIndex: 3,
+  },
+  homeHeader: {
+    top: StatusBar.currentHeight,
+    height: "10%",
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: colors.lightBlue,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.58,
+    shadowRadius: 16.0,
+
+    elevation: 24,
+  },
+  homeHeaderTitle: {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addNoteButton: {
+    position: "absolute",
+    bottom: "3%",
+    right: "10%",
+    padding: 10,
+    backgroundColor: colors.lightBlue,
+    borderWidth: 2,
+    borderColor: colors.white,
+    borderRadius: 100,
+  },
+  card: {
+    width: (45 / 100) * windowWidth,
+    height: (30 / 100) * windowHeight,
+    flexDirection: "column",
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: colors.lightBlue,
+    backgroundColor: colors.lightBlue,
+    marginVertical: 20,
+    margin: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.37,
+    shadowRadius: 7.49,
+
+    elevation: 12,
   },
 });
 
