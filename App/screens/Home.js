@@ -11,6 +11,7 @@ import {
   setBackgroundColorAsync,
   setButtonStyleAsync,
 } from "expo-navigation-bar";
+import { authentication } from "../config/firebase";
 import { Entypo } from "@expo/vector-icons";
 import moment from "moment";
 
@@ -18,12 +19,11 @@ import Card from "../components/Card";
 
 import colors from "../constants/colors";
 import styles from "../constants/styles";
-import { authentication } from "../config/firebase";
 
-const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
-export default () => {
+export default ({ navigation }) => {
+  // temporary
   const [notes, setNotes] = useState([
     {
       title: "Note Title",
@@ -41,7 +41,11 @@ export default () => {
   return (
     <View style={{ flex: 1, backgroundColor: colors.white }}>
       <View style={styles.homeHeader}>
-        <TouchableOpacity style={{ marginLeft: "5%" }} activeOpacity={0.5}>
+        <TouchableOpacity
+          style={{ marginLeft: "5%" }}
+          activeOpacity={0.5}
+          onPress={() => navigation.openDrawer()}
+        >
           <Entypo name="menu" size={50} color={colors.white} />
         </TouchableOpacity>
         <View style={styles.homeHeaderTitle}>
