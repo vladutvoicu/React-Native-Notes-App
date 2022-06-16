@@ -13,7 +13,7 @@ import {
   setButtonStyleAsync,
 } from "expo-navigation-bar";
 import { authentication } from "../config/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 import AuthInput from "../components/AuthInput";
 import RoundedButton from "../components/RoundedButton";
@@ -22,18 +22,31 @@ import colors from "../constants/colors";
 import styles from "../constants/styles";
 
 export default ({ navigation }) => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reEnteredPassword, setReEnteredPassword] = useState("");
 
+  const _storeData = async () => {
+    try {
+      await AsyncStorage.setItem("keepLoggedIn", "true");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const signUp = () => {
-    if (password == reEnteredPassword) {
+    if (password == reEnteredPassword && username != "") {
       createUserWithEmailAndPassword(authentication, email, password)
         .then(() => {
-          Alert.alert("Succesful Registration", "Account was created!"),
-            navigation.navigate("Login");
+          updateProfile(authentication.currentUser, {
+            displayName: username,
+          }).catch((error) => console.log(error)),
+            _storeData();
         })
         .catch((error) => Alert.alert("Something went wrong", `Invalid email`));
+    } else if (username == "") {
+      Alert.alert("Something went wrong", "You must enter an username!");
     } else {
       Alert.alert("Something went wrong", "Passwords must be the same!");
     }
@@ -65,6 +78,12 @@ export default ({ navigation }) => {
       </View>
       <View style={styles.authContainer}>
         <View style={styles.authInputContainer}>
+          <AuthInput
+            icon={"user"}
+            placeholder="Username"
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+          />
           <AuthInput
             icon={"mail"}
             placeholder="Email"
