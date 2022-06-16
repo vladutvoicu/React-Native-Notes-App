@@ -129,8 +129,33 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.37,
     shadowRadius: 7.49,
-
     elevation: 12,
+  },
+  drawerTitle: {
+    top: StatusBar.currentHeight,
+    height: "30%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: "50%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.58,
+    shadowRadius: 16.0,
+
+    elevation: 24,
+  },
+  drawerBottom: {
+    position: "absolute",
+    bottom: 0,
+    height: "8%",
+    width: "100%",
+    borderTopWidth: 2,
+    borderTopColor: colors.lightBlue,
+    justifyContent: "center",
   },
 });
 
