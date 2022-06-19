@@ -7,7 +7,7 @@ const windowWidth = Dimensions.get("window").width;
 import styles from "../constants/styles";
 import colors from "../constants/colors";
 
-export default DrawerItem = ({ name }) => {
+export default DrawerItem = ({ name, addCategory, selectCategory }) => {
   const getIcon = () => {
     let icon;
     if (name == "All") {
@@ -18,6 +18,8 @@ export default DrawerItem = ({ name }) => {
       icon = "open-book";
     } else if (name == "Work") {
       icon = "briefcase";
+    } else if (name == "Add Category") {
+      icon = "circle-with-plus";
     } else {
       icon = null;
     }
@@ -34,6 +36,7 @@ export default DrawerItem = ({ name }) => {
       <TouchableOpacity
         style={{ flexDirection: "row", alignItems: "center" }}
         activeOpacity={0.5}
+        onPress={name == "Add Category" ? addCategory : selectCategory}
       >
         {getIcon() != null ? (
           <Entypo

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,16 @@ import {
   Image,
   Dimensions,
   ScrollView,
+  Modal,
+  StatusBar,
+  TextInput,
 } from "react-native";
 import { authentication } from "../config/firebase";
 import { Entypo } from "@expo/vector-icons";
+import {
+  setBackgroundColorAsync,
+  setButtonStyleAsync,
+} from "expo-navigation-bar";
 
 import styles from "../constants/styles";
 import colors from "../constants/colors";
@@ -17,7 +24,28 @@ import DrawerItem from "./DrawerItem";
 
 const windowWidth = Dimensions.get("window").width;
 
-export default CustomDrawer = ({ data }) => {
+export default CustomDrawer = ({ navigation }) => {
+  const [visibleModal, setVisibleModal] = useState(false);
+  const [notesCategory, setNotesCategory] = useState("");
+  const [categories, setCategories] = useState([
+    { name: "All", key: "all" },
+    { name: "Personal", key: "personal" },
+    { name: "Study", key: "study" },
+    { name: "Work", key: "work" },
+    { name: "Add Category", key: "addCategory" },
+  ]);
+
+  const addCategory = () => {
+    setVisibleModal(true);
+  };
+
+  const selectCategory = (name) => {
+    navigation.navigate("Home", { selectedCategory: name });
+  };
+
+  //
+  StatusBar.setBackgroundColor(visibleModal ? colors.black : colors.lightBlue);
+  //
   return (
     <View style={{ flex: 1 }}>
       <Image
@@ -47,8 +75,13 @@ export default CustomDrawer = ({ data }) => {
         }}
       >
         <ScrollView>
-          {data.map((item) => (
-            <DrawerItem name={item.name} />
+          {categories.map((item) => (
+            <DrawerItem
+              name={item.name}
+              key={item.key}
+              addCategory={addCategory}
+              selectCategory={() => selectCategory(item.name)}
+            />
           ))}
         </ScrollView>
       </View>
@@ -72,13 +105,57 @@ export default CustomDrawer = ({ data }) => {
             style={{
               fontSize: 0.05 * windowWidth,
               fontWeight: "bold",
-              color: colors.black,
+              color: colors.red,
             }}
           >
             Sign out
           </Text>
         </TouchableOpacity>
       </View>
+      <Modal visible={visibleModal} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalPrompt}>
+            <View style={styles.modalTextInput}>
+              <TextInput
+                placeholder="Note Category"
+                value={notesCategory}
+                selectionColor={colors.black}
+                textAlign={"center"}
+                style={{
+                  width: "90%",
+                  color: colors.black,
+                  fontSize: 0.06 * windowWidth,
+                }}
+                onChangeText={(text) => setNotesCategory(text)}
+              />
+            </View>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity onPress={() => setVisibleModal(false)}>
+                <Text
+                  style={{
+                    color: colors.red,
+                    fontSize: 0.06 * windowWidth,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: colors.lightBlue,
+                    fontSize: 0.06 * windowWidth,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Add
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
