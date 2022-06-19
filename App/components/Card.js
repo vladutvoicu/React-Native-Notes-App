@@ -6,9 +6,14 @@ const windowWidth = Dimensions.get("window").width;
 import styles from "../constants/styles";
 import colors from "../constants/colors";
 
-export default Card = ({ title, content, date }) => {
+export default Card = ({ title, content, date, onPress, onLongPress }) => {
   return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.5}>
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.5}
+      onPress={onPress}
+      onLongPress={onLongPress}
+    >
       <View
         style={{
           width: "100%",
@@ -19,20 +24,26 @@ export default Card = ({ title, content, date }) => {
           style={{
             fontSize: 0.035 * windowWidth,
             marginRight: "5%",
-            color: colors.white,
+            color: colors.black,
             borderBottomWidth: 1,
-            borderBottomColor: colors.white,
+            borderBottomColor: colors.lightBlue,
           }}
         >
           {date}
         </Text>
       </View>
-      <View style={{ width: "100%" }}>
+      <View
+        style={{
+          width: "100%",
+          borderBottomWidth: 1,
+          borderColor: colors.lightBlue,
+        }}
+      >
         <Text
           style={{
             fontSize: 0.06 * windowWidth,
             fontWeight: "bold",
-            color: colors.white,
+            color: colors.black,
           }}
         >
           {title}
@@ -42,7 +53,7 @@ export default Card = ({ title, content, date }) => {
         <Text
           style={{
             fontSize: 0.04 * windowWidth,
-            color: colors.white,
+            color: colors.black,
             marginTop: "5%",
             marginLeft: "5%",
           }}
