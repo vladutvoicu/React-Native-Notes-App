@@ -1,15 +1,22 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { Text, TouchableOpacity, Dimensions } from "react-native";
 
 const windowWidth = Dimensions.get("window").width;
 
 import styles from "../constants/styles";
 import colors from "../constants/colors";
 
-export default AuthInput = ({ text, onPress }) => {
+export default AuthInput = ({ text, onPress, color }) => {
   return (
     <TouchableOpacity
-      style={styles.roundedButton}
+      style={
+        color
+          ? [
+              styles.roundedButton,
+              { backgroundColor: color, borderColor: color },
+            ]
+          : styles.roundedButton
+      }
       activeOpacity={0.5}
       onPress={onPress}
     >

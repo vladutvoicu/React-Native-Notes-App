@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import Home from "../screens/Home";
-import AddNote from "../screens/AddNote";
+import Note from "../screens/Note";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
 import Reset from "../screens/Reset";
@@ -17,14 +17,6 @@ const Drawer = createDrawerNavigator();
 
 export default () => {
   const [loggedIn, setLoggedIn] = useState(false);
-
-  // temporary
-  const [categories, setCategories] = useState([
-    { name: "All" },
-    { name: "Personal" },
-    { name: "Study" },
-    { name: "Work" },
-  ]);
 
   useEffect(() => {
     onAuthStateChanged(authentication, (data) => {
@@ -39,7 +31,8 @@ export default () => {
   const _Home = () => {
     return (
       <Drawer.Navigator
-        drawerContent={(props) => <CustomDrawer {...props} data={categories} />}
+        drawerContent={(props) => <CustomDrawer {...props} />}
+        useLegacyImplementation={true}
       >
         <Drawer.Screen
           name="Home"
@@ -54,15 +47,15 @@ export default () => {
     <NavigationContainer>
       {loggedIn ? (
         <>
-          <Stack.Navigator screenOptions={{ animation: "slide_from_right" }}>
+          <Stack.Navigator screenOptions={{ animation: "slide_from_bottom" }}>
             <Stack.Screen
               name="_Home"
               component={_Home}
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="AddNote"
-              component={AddNote}
+              name="Note"
+              component={Note}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

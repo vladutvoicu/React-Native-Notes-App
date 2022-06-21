@@ -244,6 +244,46 @@ const styles = StyleSheet.create({
     elevation: 24,
     zIndex: -1,
   },
+  noteHeader: {
+    top: StatusBar.currentHeight,
+    height: "10%",
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: colors.lightBlue,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.58,
+    shadowRadius: 16.0,
+
+    elevation: 24,
+  },
+  noteHeaderTitle: {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  noteTextInputContainer: {
+    height: "90%",
+    width: "100%",
+    padding: "5%",
+    borderWidth: 2,
+    borderRadius: 20,
+    borderColor: colors.lightBlue,
+  },
+  noteButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    height: "10%",
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
 });
 
 export default styles;

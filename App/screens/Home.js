@@ -120,6 +120,13 @@ export default ({ navigation, route }) => {
             title={item.title}
             content={item.content}
             date={item.date}
+            onPress={() =>
+              navigation.navigate("Note", {
+                title: item.title,
+                content: item.content,
+                editMode: false,
+              })
+            }
             onLongPress={() => sheetRef.current.snapTo(0)}
           />
         )}
@@ -148,7 +155,13 @@ export default ({ navigation, route }) => {
           </Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.addNoteButton} activeOpacity={0.5}>
+      <TouchableOpacity
+        style={styles.addNoteButton}
+        activeOpacity={0.5}
+        onPress={() =>
+          navigation.navigate("Note", { editMode: true, addNoteMode: true })
+        }
+      >
         <Entypo name="plus" size={40} color={colors.white} />
       </TouchableOpacity>
       <BottomSheet
