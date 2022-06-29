@@ -7,7 +7,12 @@ const windowWidth = Dimensions.get("window").width;
 import styles from "../constants/styles";
 import colors from "../constants/colors";
 
-export default DrawerItem = ({ name, addCategory, selectCategory }) => {
+export default DrawerItem = ({
+  name,
+  addCategory,
+  selectCategory,
+  onLongPress,
+}) => {
   const getIcon = () => {
     let icon;
     if (name == "All") {
@@ -37,6 +42,7 @@ export default DrawerItem = ({ name, addCategory, selectCategory }) => {
         style={{ flexDirection: "row", alignItems: "center" }}
         activeOpacity={0.5}
         onPress={name == "Add Category" ? addCategory : selectCategory}
+        onLongPress={onLongPress}
       >
         {getIcon() != null ? (
           <Entypo

@@ -13,11 +13,16 @@ import {
 } from "expo-navigation-bar";
 import { authentication } from "../config/firebase";
 import { Entypo } from "@expo/vector-icons";
-import moment from "moment";
-import Animated from "react-native-reanimated";
+import Animated, { not } from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
+import { getDrawerStatusFromState } from "@react-navigation/drawer";
+import { useIsFocused } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 import Card from "../components/Card";
+import BottomSheet_ from "../components/BottomSheet_";
 
 import colors from "../constants/colors";
 import styles from "../constants/styles";
@@ -25,48 +30,70 @@ import styles from "../constants/styles";
 const windowWidth = Dimensions.get("window").width;
 
 export default ({ navigation, route }) => {
-  const [selectedCategory, setSelectedCategory] = useState();
-  // temporary
-  const [notes, setNotes] = useState([
-    {
-      title: "Note Title",
-      content: "Note Content",
-      date: moment(new Date()).format("LL"),
-    },
-  ]);
+  const [notes, setNotes] = useState([]);
+  const [selectedNote, setSelectedNote] = useState({});
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    setSelectedCategory(route.params?.selectedCategory);
+    navigation.addListener("state", () => {
+      const isDrawerOpen = getDrawerStatusFromState(navigation.getState());
+
+      (async () => {
+        await AsyncStorage.setItem(
+          "selectedCategory",
+          route.params?.selectedCategory
+            ? route.params?.selectedCategory
+            : "All"
+        );
+      })();
+    });
   }, [route.params?.selectedCategory]);
 
-  const renderContent = () => (
-    <View style={styles.bottomSheet}>
-      <View style={styles.header}>
-        <View style={styles.panelHeader}>
-          <View style={styles.panelHandle} />
-        </View>
-      </View>
-      <View style={styles.bottomSheetItems}>
-        <TouchableOpacity onPress={() => sheetRef.current.snapTo(2)}>
-          <Text
-            style={{
-              fontSize: 25,
-              color: colors.lightBlue,
-              fontWeight: "bold",
-            }}
-          >
-            Edit
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.hairline} />
-        <TouchableOpacity onPress={() => sheetRef.current.snapTo(2)}>
-          <Text style={{ fontSize: 25, color: colors.red, fontWeight: "bold" }}>
-            Delete
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+  useEffect(() => {
+    (async () => {
+      const userId = await AsyncStorage.getItem("userId");
+      const categoriesId = await AsyncStorage.getItem("categoriesId");
+
+      return [userId, categoriesId];
+    })().then((ids) => {
+      if (
+        route.params?.selectedCategory != undefined &&
+        route.params?.selectedCategory != "All"
+      ) {
+        (async () => {
+          const docRef = doc(db, "users", ids[0], "categories", ids[1]);
+          try {
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data()[route.params?.selectedCategory];
+
+            setNotes(data);
+          } catch (error) {
+            console.log(error);
+          }
+        })();
+      } else {
+        (async () => {
+          const docRef = doc(db, "users", ids[0], "categories", ids[1]);
+          try {
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+
+            var notes = [];
+            Object.keys(data).map((key) => {
+              var category = data[key];
+              for (const i in category) {
+                notes.push(category[i]);
+              }
+            });
+            setNotes(notes);
+          } catch (error) {
+            console.log(error);
+          }
+        })();
+      }
+    });
+  }, [route.params?.selectedCategory, isFocused]);
 
   const sheetRef = useRef(null);
 
@@ -120,14 +147,31 @@ export default ({ navigation, route }) => {
             title={item.title}
             content={item.content}
             date={item.date}
+            category={
+              route.params?.selectedCategory == "All" ||
+              route.params?.selectedCategory == undefined
+                ? item.category
+                : null
+            }
+            key={item.key}
             onPress={() =>
               navigation.navigate("Note", {
                 title: item.title,
                 content: item.content,
+                noteCategory: item.category,
+                selectedCategory:
+                  route.params?.selectedCategory == "All" ||
+                  route.params?.selectedCategory == undefined
+                    ? "All"
+                    : item.category,
+                key: item.key,
                 editMode: false,
               })
             }
-            onLongPress={() => sheetRef.current.snapTo(0)}
+            onLongPress={() => {
+              sheetRef.current.snapTo(0),
+                setSelectedNote({ title: item.title, content: item.content });
+            }}
           />
         )}
       />
@@ -151,7 +195,9 @@ export default ({ navigation, route }) => {
               fontWeight: "bold",
             }}
           >
-            {selectedCategory ? selectedCategory : "All"}
+            {route.params?.selectedCategory != undefined
+              ? route.params?.selectedCategory
+              : "All"}
           </Text>
         </View>
       </View>
@@ -159,7 +205,12 @@ export default ({ navigation, route }) => {
         style={styles.addNoteButton}
         activeOpacity={0.5}
         onPress={() =>
-          navigation.navigate("Note", { editMode: true, addNoteMode: true })
+          navigation.navigate("Note", {
+            editMode: true,
+            addNoteMode: true,
+            selectedCategory: route.params?.selectedCategory,
+            noteCategory: route.params?.selectedCategory,
+          })
         }
       >
         <Entypo name="plus" size={40} color={colors.white} />
@@ -169,7 +220,21 @@ export default ({ navigation, route }) => {
         initialSnap={2}
         snapPoints={["25%", 0, 0]}
         borderRadius={20}
-        renderContent={renderContent}
+        renderContent={() => (
+          <BottomSheet_
+            option1={"Edit"}
+            option2={"Cancel"}
+            onPress1={() => {
+              navigation.navigate("Note", {
+                title: selectedNote.title,
+                content: selectedNote.content,
+                editMode: true,
+              }),
+                sheetRef.current.snapTo(2);
+            }}
+            onPress2={() => sheetRef.current.snapTo(2)}
+          />
+        )}
       />
     </View>
   );

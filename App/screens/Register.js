@@ -14,6 +14,9 @@ import {
 } from "expo-navigation-bar";
 import { authentication } from "../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 import AuthInput from "../components/AuthInput";
 import RoundedButton from "../components/RoundedButton";
@@ -27,9 +30,9 @@ export default ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [reEnteredPassword, setReEnteredPassword] = useState("");
 
-  const _storeData = async () => {
+  const _storeData = async (key, value) => {
     try {
-      await AsyncStorage.setItem("keepLoggedIn", "true");
+      await AsyncStorage.setItem(key, value);
     } catch (error) {
       console.log(error);
     }
@@ -41,8 +44,28 @@ export default ({ navigation }) => {
         .then(() => {
           updateProfile(authentication.currentUser, {
             displayName: username,
-          }).catch((error) => console.log(error)),
-            _storeData();
+          })
+            .then(async () => {
+              try {
+                const docUserRef = await addDoc(collection(db, "users"), {
+                  user: email,
+                });
+                const docCategoriesRef = await addDoc(
+                  collection(db, "users", docUserRef.id, "categories"),
+                  {
+                    Personal: [],
+                    Study: [],
+                    Work: [],
+                  }
+                );
+                _storeData("userId", docUserRef.id);
+                _storeData("categoriesId", docCategoriesRef.id);
+              } catch (error) {
+                console.log(error);
+              }
+            })
+            .catch((error) => console.log(error));
+          _storeData("keepLoggedIn", "true");
         })
         .catch((error) => Alert.alert("Something went wrong", `Invalid email`));
     } else if (username == "") {

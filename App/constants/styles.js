@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
     height: "10%",
     alignItems: "center",
     flexDirection: "row",
+    justifyContent: "space-between",
     backgroundColor: colors.lightBlue,
     shadowColor: "#000",
     shadowOffset: {
@@ -268,21 +269,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   noteTextInputContainer: {
-    height: "90%",
+    height: "85%",
     width: "100%",
     padding: "5%",
     borderWidth: 2,
     borderRadius: 20,
     borderColor: colors.lightBlue,
+    backgroundColor: colors.white,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
   },
-  noteButtonContainer: {
+  noteBottomContainer: {
     position: "absolute",
-    bottom: 0,
+    bottom: "4%",
     height: "10%",
     width: "100%",
-    flexDirection: "row",
+    alignItems: "center",
+  },
+  noteButtonContainer: {
+    width: "100%",
     alignItems: "center",
     justifyContent: "space-evenly",
+    flexDirection: "row",
   },
 });
 
