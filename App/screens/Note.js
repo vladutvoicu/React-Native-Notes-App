@@ -113,6 +113,7 @@ export default Note = ({ navigation, route }) => {
           var note = data[key];
           note["title"] = title;
           note["content"] = content;
+          note["date"] = moment(new Date()).format("LL");
 
           notes.push(note);
 

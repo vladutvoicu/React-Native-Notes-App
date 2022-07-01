@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
   Alert,
+  Dimensions,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import {
@@ -21,6 +22,8 @@ import RoundedButton from "../components/RoundedButton";
 import colors from "../constants/colors";
 import styles from "../constants/styles";
 
+const windowWidth = Dimensions.get("window").width;
+
 export default ({ navigation }) => {
   const [email, setEmail] = useState("");
 
@@ -29,7 +32,7 @@ export default ({ navigation }) => {
       .then(() => {
         Alert.alert(
           "Email Sent",
-          "You will recieve a email with a link to reset your password. It may take a few minutes to recieve the email."
+          "You will recieve a email with a link to reset your password. It may take a few minutes to recieve the email (check in spam also)."
         ),
           navigation.navigate("Login");
       })
@@ -60,12 +63,20 @@ export default ({ navigation }) => {
         style={styles.loginBackgroundImage}
       />
       <View style={styles.loginHeader}>
-        <Text style={{ fontSize: 40, color: colors.white, fontWeight: "bold" }}>
+        <Text
+          style={{
+            fontSize: 0.1 * windowWidth,
+            color: colors.white,
+            fontWeight: "bold",
+          }}
+        >
           Reset Password
         </Text>
       </View>
       <View style={styles.authContainer}>
-        <Text style={{ fontSize: 16, textAlign: "center", top: 30 }}>
+        <Text
+          style={{ fontSize: 0.04 * windowWidth, textAlign: "center", top: 30 }}
+        >
           Enter your email address and we'll send you a link to reset your
           password
         </Text>

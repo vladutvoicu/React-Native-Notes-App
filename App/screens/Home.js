@@ -11,9 +11,8 @@ import {
   setBackgroundColorAsync,
   setButtonStyleAsync,
 } from "expo-navigation-bar";
-import { authentication } from "../config/firebase";
 import { Entypo } from "@expo/vector-icons";
-import Animated, { not } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import { getDrawerStatusFromState } from "@react-navigation/drawer";
 import { useIsFocused } from "@react-navigation/native";
@@ -54,7 +53,6 @@ export default ({ navigation, route }) => {
     (async () => {
       const userId = await AsyncStorage.getItem("userId");
       const categoriesId = await AsyncStorage.getItem("categoriesId");
-
       return [userId, categoriesId];
     })().then((ids) => {
       if (
@@ -170,7 +168,18 @@ export default ({ navigation, route }) => {
             }
             onLongPress={() => {
               sheetRef.current.snapTo(0),
-                setSelectedNote({ title: item.title, content: item.content });
+                setSelectedNote({
+                  title: item.title,
+                  content: item.content,
+                  noteCategory: item.category,
+                  selectedCategory:
+                    route.params?.selectedCategory == "All" ||
+                    route.params?.selectedCategory == undefined
+                      ? "All"
+                      : item.category,
+                  key: item.key,
+                  editMode: true,
+                });
             }}
           />
         )}
@@ -225,11 +234,7 @@ export default ({ navigation, route }) => {
             option1={"Edit"}
             option2={"Cancel"}
             onPress1={() => {
-              navigation.navigate("Note", {
-                title: selectedNote.title,
-                content: selectedNote.content,
-                editMode: true,
-              }),
+              navigation.navigate("Note", selectedNote),
                 sheetRef.current.snapTo(2);
             }}
             onPress2={() => sheetRef.current.snapTo(2)}

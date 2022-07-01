@@ -38,7 +38,7 @@ export default AuthInput = ({
           color: colors.black,
         }}
         value={value}
-        selectionColor={colors.black}
+        selectionColor={`${colors.black}50`}
         autoCapitalize={"none"}
         secureTextEntry={password ? secureTextEntry : undefined}
         keyboardType={password ? "default" : "email-address"}
