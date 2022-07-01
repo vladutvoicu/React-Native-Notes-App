@@ -15,7 +15,14 @@ import {
 import { authentication } from "../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  query,
+} from "firebase/firestore";
 import { db } from "../config/firebase";
 
 import AuthInput from "../components/AuthInput";
@@ -30,48 +37,79 @@ export default ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [reEnteredPassword, setReEnteredPassword] = useState("");
 
-  const _storeData = async (key, value) => {
+  const signUp = async () => {
     try {
-      await AsyncStorage.setItem(key, value);
+      const q = query(collection(db, "users"));
+      var users = [];
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        users.push(doc.data()["user"]);
+      });
     } catch (error) {
       console.log(error);
     }
-  };
 
-  const signUp = () => {
-    if (password == reEnteredPassword && username != "") {
-      createUserWithEmailAndPassword(authentication, email, password)
-        .then(() => {
-          updateProfile(authentication.currentUser, {
-            displayName: username,
-          })
-            .then(async () => {
-              try {
-                const docUserRef = await addDoc(collection(db, "users"), {
-                  user: email,
-                });
-                const docCategoriesRef = await addDoc(
-                  collection(db, "users", docUserRef.id, "categories"),
-                  {
-                    Personal: [],
-                    Study: [],
-                    Work: [],
-                  }
+    if (users.includes(email) == false) {
+      try {
+        const docUserRef = await addDoc(collection(db, "users"), {
+          user: email,
+        });
+        const docCategoriesRef = await addDoc(
+          collection(db, "users", docUserRef.id, "categories"),
+          {
+            Personal: [],
+            Study: [],
+            Work: [],
+          }
+        );
+        await AsyncStorage.setItem("userId", docUserRef.id);
+        await AsyncStorage.setItem("categoriesId", docCategoriesRef.id);
+
+        var userRefId = docUserRef.id;
+        var categoriesRefId = docCategoriesRef.id;
+
+        do {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          var userId;
+          var categoriesId;
+
+          userId = await AsyncStorage.getItem("userId");
+          categoriesId = await AsyncStorage.getItem("categoriesId");
+        } while (userId == null && categoriesId == null);
+        (() => {
+          if (password == reEnteredPassword && username != "") {
+            createUserWithEmailAndPassword(authentication, email, password)
+              .then(async () => {
+                updateProfile(authentication.currentUser, {
+                  displayName: username,
+                }).catch((error) => console.log(error));
+                await AsyncStorage.setItem("keepLoggedIn", "true");
+              })
+              .catch(async (error) => {
+                Alert.alert("Something went wrong", "Invalid email");
+                var docRef = doc(
+                  db,
+                  "users",
+                  userRefId,
+                  "categories",
+                  categoriesRefId
                 );
-                _storeData("userId", docUserRef.id);
-                _storeData("categoriesId", docCategoriesRef.id);
-              } catch (error) {
-                console.log(error);
-              }
-            })
-            .catch((error) => console.log(error));
-          _storeData("keepLoggedIn", "true");
-        })
-        .catch((error) => Alert.alert("Something went wrong", `Invalid email`));
-    } else if (username == "") {
-      Alert.alert("Something went wrong", "You must enter an username!");
+                await deleteDoc(docRef);
+                var docRef = doc(db, "users", userRefId);
+                await deleteDoc(docRef);
+              });
+          } else if (username == "") {
+            Alert.alert("Something went wrong", "You must enter an username!");
+          } else {
+            Alert.alert("Something went wrong", "Passwords must be the same!");
+          }
+        })();
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      Alert.alert("Something went wrong", "Passwords must be the same!");
+      Alert.alert("Something went wrong", "Invalid email");
     }
   };
 
@@ -136,7 +174,7 @@ export default ({ navigation }) => {
             justifyContent: "center",
           }}
         >
-          <RoundedButton text={"Register"} onPress={signUp} />
+          <RoundedButton text={"Register"} onPress={() => signUp()} />
         </View>
       </View>
     </View>

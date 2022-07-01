@@ -14,6 +14,8 @@ import {
 } from "expo-navigation-bar";
 import { authentication } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, collection, getDocs, query } from "firebase/firestore";
+import { db } from "../config/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import AuthInput from "../components/AuthInput";
@@ -27,17 +29,45 @@ export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const _storeData = async (choice) => {
-    try {
-      await AsyncStorage.setItem("keepLoggedIn", `${choice}`);
-    } catch (error) {
-      console.log(error);
-    }
+  const setIds = async () => {
+    const q = query(collection(db, "users"));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      (async () => {
+        var userId;
+        var categoriesId;
+
+        if (doc.data()["user"] == email) {
+          userId = doc.id;
+          const q = query(collection(db, "users", userId, "categories"));
+
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            categoriesId = doc.id;
+          });
+          await AsyncStorage.setItem("userId", userId);
+          await AsyncStorage.setItem("categoriesId", categoriesId);
+
+          do {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            var userId;
+            var categoriesId;
+
+            userId = await AsyncStorage.getItem("userId");
+            categoriesId = await AsyncStorage.getItem("categoriesId");
+          } while (userId == null && categoriesId == null);
+        } else {
+        }
+      })();
+    });
   };
 
   const signIn = () => {
     signInWithEmailAndPassword(authentication, email, password)
-      .then(_storeData(isChecked))
+      .then(
+        async () => await AsyncStorage.setItem("keepLoggedIn", `${isChecked}`)
+      )
       .catch((error) =>
         Alert.alert("Something went wrong", `Email or password are invalid`)
       );
@@ -161,7 +191,10 @@ export default ({ navigation }) => {
             justifyContent: "center",
           }}
         >
-          <RoundedButton text={"Login"} onPress={signIn} />
+          <RoundedButton
+            text={"Login"}
+            onPress={() => setIds().then(() => signIn())}
+          />
         </View>
       </View>
     </View>

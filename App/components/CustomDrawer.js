@@ -204,7 +204,13 @@ export default CustomDrawer = ({ navigation }) => {
             width: "50%",
           }}
           activeOpacity={0.5}
-          onPress={() => authentication.signOut()}
+          onPress={() => {
+            (async () => {
+              await AsyncStorage.setItem("userId", "");
+              await AsyncStorage.setItem("categoriesId", "");
+            })();
+            authentication.signOut();
+          }}
         >
           <Entypo
             name="log-out"

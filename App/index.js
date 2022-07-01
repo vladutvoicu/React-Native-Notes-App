@@ -12,6 +12,8 @@ export default () => {
         const value = await AsyncStorage.getItem("keepLoggedIn");
         if (value == "false") {
           authentication.signOut();
+          await AsyncStorage.setItem("userId", "");
+          await AsyncStorage.setItem("categoriesId", "");
         } else {
         }
       } catch (error) {
