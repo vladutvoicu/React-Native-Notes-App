@@ -132,7 +132,7 @@ export default CustomDrawer = ({ navigation }) => {
     if (modalSelectedCategory == selectedCategory) {
       navigation.navigate("Home", { selectedCategory: "All" });
     } else {
-      navigation.navigate("Home", { selectedCategory: "All" });
+      navigation.navigate("Home", { selectedCategory: selectedCategory });
     }
   };
 
