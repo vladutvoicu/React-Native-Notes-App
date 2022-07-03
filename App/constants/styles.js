@@ -298,6 +298,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     flexDirection: "row",
   },
+  loadingContainer: {
+    position: "absolute",
+    top: 0,
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2,
+    backgroundColor: `${colors.black}80`,
+  },
+  loadingContainerHome: {
+    position: "absolute",
+    top: "20%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2,
+  },
 });
 
 export default styles;

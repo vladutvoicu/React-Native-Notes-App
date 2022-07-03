@@ -6,6 +6,8 @@ import {
   StatusBar,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import {
@@ -31,13 +33,17 @@ import RoundedButton from "../components/RoundedButton";
 import colors from "../constants/colors";
 import styles from "../constants/styles";
 
+const windowWidth = Dimensions.get("window").width;
+
 export default ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reEnteredPassword, setReEnteredPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const signUp = async () => {
+    setLoading(true);
     try {
       const q = query(collection(db, "users"));
       var users = [];
@@ -87,7 +93,14 @@ export default ({ navigation }) => {
                 await AsyncStorage.setItem("keepLoggedIn", "true");
               })
               .catch(async (error) => {
-                Alert.alert("Something went wrong", "Invalid email");
+                if (password.length < 6) {
+                  Alert.alert(
+                    "Something went wrong",
+                    "Password too short, must have at least 6 characters"
+                  );
+                } else {
+                  Alert.alert("Something went wrong", "Invalid email");
+                }
                 var docRef = doc(
                   db,
                   "users",
@@ -98,11 +111,14 @@ export default ({ navigation }) => {
                 await deleteDoc(docRef);
                 var docRef = doc(db, "users", userRefId);
                 await deleteDoc(docRef);
+                setLoading(false);
               });
           } else if (username == "") {
             Alert.alert("Something went wrong", "You must enter an username!");
+            setLoading(false);
           } else {
             Alert.alert("Something went wrong", "Passwords must be the same!");
+            setLoading(false);
           }
         })();
       } catch (error) {
@@ -110,6 +126,7 @@ export default ({ navigation }) => {
       }
     } else {
       Alert.alert("Something went wrong", "Invalid email");
+      setLoading(false);
     }
   };
 
@@ -117,8 +134,13 @@ export default ({ navigation }) => {
   StatusBar.setBarStyle("light-content");
   StatusBar.setBackgroundColor("transparent");
   StatusBar.setTranslucent(true);
-  setBackgroundColorAsync(`${colors.white}`);
-  setButtonStyleAsync("dark");
+  {
+    !loading
+      ? (setBackgroundColorAsync(`${colors.white}`),
+        setButtonStyleAsync("dark"))
+      : (setBackgroundColorAsync(`${colors.black}80`),
+        setButtonStyleAsync("light"));
+  }
   //
   return (
     <View style={{ flex: 1 }}>
@@ -177,6 +199,11 @@ export default ({ navigation }) => {
           <RoundedButton text={"Register"} onPress={() => signUp()} />
         </View>
       </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size={0.2 * windowWidth} color={colors.white} />
+        </View>
+      ) : null}
     </View>
   );
 };

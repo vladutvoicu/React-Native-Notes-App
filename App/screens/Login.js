@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   StatusBar,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import Checkbox from "expo-checkbox";
 import {
@@ -24,12 +26,16 @@ import RoundedButton from "../components/RoundedButton";
 import colors from "../constants/colors";
 import styles from "../constants/styles";
 
+const windowWidth = Dimensions.get("window").width;
+
 export default ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const setIds = async () => {
+    setLoading(true);
     const q = query(collection(db, "users"));
 
     const querySnapshot = await getDocs(q);
@@ -68,9 +74,10 @@ export default ({ navigation }) => {
       .then(
         async () => await AsyncStorage.setItem("keepLoggedIn", `${isChecked}`)
       )
-      .catch((error) =>
-        Alert.alert("Something went wrong", `Email or password are invalid`)
-      );
+      .catch((error) => {
+        Alert.alert("Something went wrong", `Email or password are invalid`);
+        setLoading(false);
+      });
   };
 
   const setChecked = () => {
@@ -80,8 +87,13 @@ export default ({ navigation }) => {
   StatusBar.setBarStyle("light-content");
   StatusBar.setBackgroundColor("transparent");
   StatusBar.setTranslucent(true);
-  setBackgroundColorAsync(`${colors.white}`);
-  setButtonStyleAsync("dark");
+  {
+    !loading
+      ? (setBackgroundColorAsync(`${colors.white}`),
+        setButtonStyleAsync("dark"))
+      : (setBackgroundColorAsync(`${colors.black}80`),
+        setButtonStyleAsync("light"));
+  }
   //
   return (
     <View style={{ flex: 1 }}>
@@ -197,6 +209,11 @@ export default ({ navigation }) => {
           />
         </View>
       </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size={0.2 * windowWidth} color={colors.white} />
+        </View>
+      ) : null}
     </View>
   );
 };

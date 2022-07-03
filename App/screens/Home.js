@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import {
   setBackgroundColorAsync,
@@ -14,7 +15,10 @@ import {
 import { Entypo } from "@expo/vector-icons";
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
-import { getDrawerStatusFromState } from "@react-navigation/drawer";
+import {
+  getDrawerStatusFromState,
+  useDrawerStatus,
+} from "@react-navigation/drawer";
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, getDoc } from "firebase/firestore";
@@ -31,8 +35,10 @@ const windowWidth = Dimensions.get("window").width;
 export default ({ navigation, route }) => {
   const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const isFocused = useIsFocused();
+  const drawerState = useDrawerStatus();
 
   useEffect(() => {
     navigation.addListener("state", () => {
@@ -50,48 +56,54 @@ export default ({ navigation, route }) => {
   }, [route.params?.selectedCategory]);
 
   useEffect(() => {
-    (async () => {
-      const userId = await AsyncStorage.getItem("userId");
-      const categoriesId = await AsyncStorage.getItem("categoriesId");
-      return [userId, categoriesId];
-    })().then((ids) => {
-      if (
-        route.params?.selectedCategory != undefined &&
-        route.params?.selectedCategory != "All"
-      ) {
-        (async () => {
-          const docRef = doc(db, "users", ids[0], "categories", ids[1]);
-          try {
-            const docSnap = await getDoc(docRef);
-            const data = docSnap.data()[route.params?.selectedCategory];
+    if (drawerState == "closed") {
+      setNotes([]);
+      setLoading(true);
+      (async () => {
+        const userId = await AsyncStorage.getItem("userId");
+        const categoriesId = await AsyncStorage.getItem("categoriesId");
+        return [userId, categoriesId];
+      })()
+        .then((ids) => {
+          if (
+            route.params?.selectedCategory != undefined &&
+            route.params?.selectedCategory != "All"
+          ) {
+            (async () => {
+              const docRef = doc(db, "users", ids[0], "categories", ids[1]);
+              try {
+                const docSnap = await getDoc(docRef);
+                const data = docSnap.data()[route.params?.selectedCategory];
 
-            setNotes(data);
-          } catch (error) {
-            console.log(error);
-          }
-        })();
-      } else {
-        (async () => {
-          const docRef = doc(db, "users", ids[0], "categories", ids[1]);
-          try {
-            const docSnap = await getDoc(docRef);
-            const data = docSnap.data();
-
-            var notes = [];
-            Object.keys(data).map((key) => {
-              var category = data[key];
-              for (const i in category) {
-                notes.push(category[i]);
+                setNotes(data);
+              } catch (error) {
+                console.log(error);
               }
-            });
-            setNotes(notes);
-          } catch (error) {
-            console.log(error);
+            })();
+          } else {
+            (async () => {
+              const docRef = doc(db, "users", ids[0], "categories", ids[1]);
+              try {
+                const docSnap = await getDoc(docRef);
+                const data = docSnap.data();
+
+                var notes = [];
+                Object.keys(data).map((key) => {
+                  var category = data[key];
+                  for (const i in category) {
+                    notes.push(category[i]);
+                  }
+                });
+                setNotes(notes);
+              } catch (error) {
+                console.log(error);
+              }
+            })();
           }
-        })();
-      }
-    });
-  }, [route.params?.selectedCategory, isFocused]);
+        })
+        .then(() => setLoading(false));
+    }
+  }, [route.params?.selectedCategory, isFocused, drawerState]);
 
   const sheetRef = useRef(null);
 
@@ -241,6 +253,11 @@ export default ({ navigation, route }) => {
           />
         )}
       />
+      {loading ? (
+        <View style={styles.loadingContainerHome}>
+          <ActivityIndicator size={0.15 * windowWidth} color={colors.black} />
+        </View>
+      ) : null}
     </View>
   );
 };
