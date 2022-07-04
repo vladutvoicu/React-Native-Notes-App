@@ -77,7 +77,7 @@ If you don't want to create an account in the app you can use this one:
 
 ## Demonstrations
 
-### Login in
+### Logging in
 
 <img src="https://media4.giphy.com/media/hQoPFctToUyjA9rwGc/giphy.gif?cid=790b761112c4c6bc740d1d3199d3cf8c78f32973138a9df3&rid=giphy.gif&ct=g" height="350" />
 
