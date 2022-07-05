@@ -108,3 +108,6 @@ If you don't want to create an account in the app you can use this one:
 
 ## Authors
 - [Vlăduț Voicu](https://github.com/vladutvoicu)
+
+## License
+- This repository has an [MIT license](https://github.com/vladutvoicu/React-Native-Notes-App/blob/main/LICENSE).
