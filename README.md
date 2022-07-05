@@ -59,7 +59,7 @@ expo start
 
 ### Method 2
 
-  1. Download the [Expo Go](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www) app on your Android device (IOS not available for the Notes App)
+  1. Download the [Expo Go](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www) app on your Android device (the app was not tested on a iOS device)
   2. Scan this QR code in the Expo Go app
 
 <img src="https://qr.expo.dev/expo-go?owner=vladutvoicu&slug=Notes&releaseChannel=default&host=exp.host" width="250" height="250" />
