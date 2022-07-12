@@ -1,16 +1,16 @@
 # React Native Notes App
 
-A note writing app made with React Native, using Expo, Firebase and Firestore
-
 [![](https://img.shields.io/static/v1?label=React%20Native&message=0.69.1&color=blue&logo=react)](https://reactnative.dev) 
 [![](https://img.shields.io/static/v1?label=Yarn&message=1.22.18&color=blue&logo=yarn)](https://yarnpkg.com) 
 [![](https://img.shields.io/static/v1?label=Node.js&message=16.15.0&color=darkgreen&logo=node.js)](https://nodejs.org/en/) 
 [![](https://img.shields.io/static/v1?label=Expo&message=5.4.3&color=white&logo=expo)](https://expo.dev)
 [![](https://img.shields.io/static/v1?label=Firebase&message=9.8.3&color=yellow&logo=firebase)](https://firebase.google.com)
 
+A note writing app made in React Native
+
 &nbsp;
 
-## Requirements
+## :gear: Requirements
 
   1. npm (node package manager)
   2. yarn (using yarn to run the app is recommended)
@@ -18,7 +18,16 @@ A note writing app made with React Native, using Expo, Firebase and Firestore
 
 &nbsp;
 
-## How to run the app ?
+## :hammer_and_wrench: Built using
+
+- [Javascript](https://www.javascript.com) - Language
+- [React Native](https://reactnative.dev) - Mobile App Framework
+- [Expo](https://expo.dev) - Framework extending React Native
+- [Firebase](https://firebase.google.com) - Database
+
+&nbsp;
+
+## :clipboard: How to run the app ?
 
 ### Method 1
 
@@ -75,7 +84,7 @@ If you don't want to create an account in the app you can use this one:
 
 &nbsp;
 
-## Demonstrations
+## :iphone: Demonstrations
 
 ### Logging in
 
@@ -106,8 +115,8 @@ If you don't want to create an account in the app you can use this one:
 
 &nbsp;
 
-## Authors
+## :writing_hand: Authors
 - [Vlăduț Voicu](https://github.com/vladutvoicu)
 
-## License
+## :memo: License
 - This repository has an [MIT license](https://github.com/vladutvoicu/React-Native-Notes-App/blob/main/LICENSE).
