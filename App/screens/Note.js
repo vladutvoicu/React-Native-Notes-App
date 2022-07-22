@@ -26,6 +26,8 @@ const windowWidth = Dimensions.get("window").width;
 export default Note = ({ navigation, route }) => {
   const [title, setTitle] = useState(route.params?.title);
   const [content, setContent] = useState(route.params?.content);
+  const [editedTitle, setEditedTitle] = useState(route.params?.title);
+  const [editedContent, setEditedContent] = useState(route.params?.content);
   const [noteKey, setNoteKey] = useState(route.params?.key);
   const [editable, setEditable] = useState(route.params?.editMode);
   const [addNoteMode] = useState(route.params?.addNoteMode);
@@ -111,8 +113,8 @@ export default Note = ({ navigation, route }) => {
           notes.push(data[key]);
         } else {
           var note = data[key];
-          note["title"] = title;
-          note["content"] = content;
+          note["title"] = editedTitle;
+          note["content"] = editedContent;
           note["date"] = moment(new Date()).format("LL");
 
           notes.push(note);
@@ -204,7 +206,13 @@ export default Note = ({ navigation, route }) => {
               />
               <RoundedButton
                 text={"Save"}
-                onPress={() => updateNote().then(() => setEditable(false))}
+                onPress={() =>
+                  updateNote().then(
+                    () => setEditable(false),
+                    setTitle(editedTitle),
+                    setContent(editedContent)
+                  )
+                }
               />
             </View>
           </View>
@@ -307,8 +315,8 @@ export default Note = ({ navigation, route }) => {
             selectionColor={`${colors.white}50`}
             placeholder="Note Title"
             placeholderTextColor={colors.white}
-            value={title}
-            onChangeText={(text) => setTitle(text)}
+            value={editable ? editedTitle : title}
+            onChangeText={(text) => setEditedTitle(text)}
             editable={editable}
           />
         </View>
@@ -333,8 +341,8 @@ export default Note = ({ navigation, route }) => {
               textAlignVertical={"top"}
               selectionColor={`${colors.black}50`}
               placeholder="Note Content"
-              value={content}
-              onChangeText={(text) => setContent(text)}
+              value={editedContent}
+              onChangeText={(text) => setEditedContent(text)}
               editable={editable}
             />
           ) : (
@@ -400,7 +408,9 @@ export default Note = ({ navigation, route }) => {
                           })
                         )
                       : !addNoteMode
-                      ? setEditable(false)
+                      ? (setEditable(false),
+                        setEditedTitle(title),
+                        setEditedContent(content))
                       : navigation.navigate("Home", {
                           selectedCategory: selectedCategory,
                         });
